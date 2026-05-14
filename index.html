@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edge AI Semantic Mapping — Rajneesh Babu</title>
+  <style>
+    :root{
+      --bg:#050810;--bg2:#0d1117;--bg3:#161b22;--border:#21262d;
+      --accent:#6366f1;--accent2:#a78bfa;--green:#34d399;
+      --orange:#f59e0b;--red:#f87171;--cyan:#22d3ee;
+      --text:#e6edf3;--muted:#7d8590;--r:12px;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
+      line-height:1.65;overflow-x:hidden;}
+    ::-webkit-scrollbar{width:5px;}
+    ::-webkit-scrollbar-track{background:var(--bg);}
+    ::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px;}
+
+    nav{position:fixed;top:0;left:0;right:0;z-index:200;
+      background:rgba(5,8,16,0.85);backdrop-filter:blur(20px);
+      border-bottom:1px solid rgba(99,102,241,0.12);
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0 2.5rem;height:56px;}
+    .nav-logo{font-weight:800;font-size:.95rem;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .nav-right{display:flex;gap:1rem;align-items:center;}
+    .nav-link{color:var(--muted);text-decoration:none;font-size:.83rem;transition:color .2s;}
+    .nav-link:hover{color:var(--text);}
+    .nav-btn{padding:.38rem 1rem;border-radius:7px;font-size:.82rem;font-weight:600;
+      text-decoration:none;background:linear-gradient(135deg,var(--accent),var(--accent2));
+      color:#fff;transition:all .2s;}
+    .nav-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(99,102,241,.35);}
+
+    .hero{min-height:100vh;display:flex;align-items:center;justify-content:center;
+      text-align:center;padding:5rem 1.5rem 3rem;position:relative;}
+    .hero-bg{position:absolute;inset:0;
+      background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(99,102,241,.15) 0%,transparent 70%);
+      pointer-events:none;}
+    .badge{display:inline-flex;align-items:center;gap:.5rem;
+      background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.25);
+      border-radius:20px;padding:.3rem 1rem;font-size:.76rem;font-weight:700;
+      color:var(--accent2);margin-bottom:1.5rem;}
+    h1{font-size:clamp(2.2rem,5.5vw,3.8rem);font-weight:900;letter-spacing:-2px;line-height:1.08;margin-bottom:1rem;}
+    h1 .grad{background:linear-gradient(135deg,var(--accent),var(--accent2),var(--cyan));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .hero-sub{font-size:1rem;color:var(--muted);max-width:600px;margin:0 auto 2rem;line-height:1.8;}
+    .hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;}
+    .btn{padding:.7rem 1.6rem;border-radius:9px;font-weight:700;font-size:.88rem;
+      text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;transition:all .25s;}
+    .btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(99,102,241,.4);}
+    .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);}
+    .btn-ghost:hover{border-color:var(--accent);color:var(--accent2);transform:translateY(-2px);}
+
+    .container{max-width:1040px;margin:0 auto;padding:0 1.5rem;}
+    section{padding:5.5rem 0;}
+
+    .sec-label{font-size:.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+      color:var(--accent2);margin-bottom:.4rem;display:flex;align-items:center;gap:.5rem;}
+    .sec-label::before{content:'';width:18px;height:2px;background:var(--accent2);}
+    h2{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;letter-spacing:-1px;margin-bottom:.5rem;}
+    .sec-sub{color:var(--muted);font-size:.93rem;margin-bottom:2.5rem;max-width:560px;}
+
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:3rem;}
+    @media(max-width:640px){.stats-row{grid-template-columns:repeat(2,1fr);}}
+    .stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+      padding:1.3rem 1rem;text-align:center;transition:border-color .25s,transform .25s;}
+    .stat:hover{border-color:var(--accent);transform:translateY(-3px);}
+    .stat-val{font-size:1.7rem;font-weight:900;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1;}
+    .stat-lbl{font-size:.72rem;color:var(--muted);margin-top:.3rem;}
+
+    .hw-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2.5rem;}
+    @media(max-width:768px){.hw-grid{grid-template-columns:repeat(2,1fr);}}
+    .hw-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+      padding:1.2rem;text-align:center;transition:border-color .25s,transform .25s;}
+    .hw-card:hover{border-color:rgba(99,102,241,.35);transform:translateY(-3px);}
+    .hw-icon{font-size:1.8rem;margin-bottom:.5rem;}
+    .hw-name{font-size:.85rem;font-weight:700;margin-bottom:.25rem;}
+    .hw-desc{font-size:.74rem;color:var(--muted);line-height:1.5;}
+
+    .pipeline{display:flex;align-items:center;flex-wrap:wrap;justify-content:center;gap:0;margin:2rem 0;}
+    .pipe-step{background:var(--bg3);border:1px solid var(--border);border-radius:10px;
+      padding:.65rem 1rem;font-size:.8rem;font-weight:600;text-align:center;
+      transition:border-color .2s,transform .2s;}
+    .pipe-step:hover{border-color:var(--accent);transform:translateY(-2px);}
+    .pipe-step.active{border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.06);}
+    .pipe-step span{display:block;font-size:.67rem;color:var(--muted);margin-top:.2rem;}
+    .pipe-arrow{color:var(--accent2);font-size:1.1rem;margin:0 .35rem;flex-shrink:0;}
+
+    .opt-table{width:100%;border-collapse:collapse;border-radius:var(--r);overflow:hidden;
+      border:1px solid var(--border);}
+    .opt-table th{background:var(--bg3);padding:.8rem 1rem;text-align:left;
+      font-size:.76rem;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;}
+    .opt-table td{padding:.8rem 1rem;border-top:1px solid var(--border);font-size:.86rem;}
+    .opt-table tr:hover td{background:rgba(99,102,241,.04);}
+    .opt-table tr.winner td{background:rgba(52,211,153,.05);}
+    .winner-badge{display:inline-flex;align-items:center;gap:.35rem;
+      background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.25);
+      color:var(--green);font-size:.72rem;font-weight:700;padding:.15rem .55rem;border-radius:5px;}
+    .bar-wrap{display:flex;align-items:center;gap:.6rem;}
+    .bar{height:6px;border-radius:3px;background:var(--bg3);flex:1;overflow:hidden;}
+    .bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));}
+    .bar-fill.g{background:linear-gradient(90deg,var(--green),var(--cyan));}
+
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+    @media(max-width:700px){.grid-2{grid-template-columns:1fr;}}
+    .card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.4rem;}
+    .card h4{font-size:.8rem;font-weight:700;color:var(--accent2);margin-bottom:.9rem;
+      letter-spacing:.5px;text-transform:uppercase;}
+    .row{display:flex;justify-content:space-between;align-items:center;
+      padding:.42rem 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.84rem;}
+    .row:last-child{border-bottom:none;}
+    .rk{color:var(--muted);}
+    .rv{font-weight:600;color:var(--text);}
+    .rv.g{color:var(--green);}
+    .rv.c{color:var(--cyan);}
+    .rv.o{color:var(--orange);}
+
+    .steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
+    @media(max-width:768px){.steps-grid{grid-template-columns:1fr;}}
+    .step-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+      padding:1.3rem;transition:border-color .25s,transform .25s;}
+    .step-card:hover{border-color:rgba(99,102,241,.35);transform:translateY(-3px);}
+    .step-num{font-size:1.4rem;font-weight:900;color:var(--accent2);margin-bottom:.5rem;}
+    .step-title{font-size:.88rem;font-weight:700;margin-bottom:.4rem;}
+    .step-desc{color:var(--muted);font-size:.8rem;line-height:1.65;}
+
+    .team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
+    @media(max-width:700px){.team-grid{grid-template-columns:1fr;}}
+    .team-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+      padding:1.3rem;transition:border-color .25s;}
+    .team-card.me{border-color:rgba(99,102,241,.35);background:rgba(99,102,241,.05);}
+    .team-name{font-size:.9rem;font-weight:700;margin-bottom:.25rem;}
+    .team-role{font-size:.75rem;color:var(--accent2);margin-bottom:.5rem;}
+    .team-desc{font-size:.8rem;color:var(--muted);line-height:1.6;}
+
+    .tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1rem;}
+    .tag{padding:.2rem .6rem;border-radius:5px;font-size:.72rem;font-weight:600;
+      background:rgba(99,102,241,.09);border:1px solid rgba(99,102,241,.18);color:var(--accent2);}
+    .tag.g{background:rgba(52,211,153,.08);border-color:rgba(52,211,153,.2);color:var(--green);}
+    .tag.o{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.2);color:var(--orange);}
+
+    #cta{background:var(--bg2);}
+    .cta-card{background:linear-gradient(135deg,rgba(99,102,241,.09),rgba(167,139,250,.04));
+      border:1px solid rgba(99,102,241,.2);border-radius:18px;padding:3.5rem;text-align:center;}
+    .cta-card h3{font-size:1.8rem;font-weight:800;margin-bottom:.7rem;}
+    .cta-card p{color:var(--muted);margin-bottom:2rem;}
+
+    footer{border-top:1px solid var(--border);padding:2rem;text-align:center;
+      color:var(--muted);font-size:.8rem;}
+    footer a{color:var(--accent2);text-decoration:none;}
+
+    .reveal{opacity:0;transform:translateY(28px);
+      transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1);}
+    .reveal.visible{opacity:1;transform:none;}
+    .d1{transition-delay:.06s;}.d2{transition-delay:.12s;}.d3{transition-delay:.18s;}
+    .d4{transition-delay:.24s;}.d5{transition-delay:.30s;}.d6{transition-delay:.36s;}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">🤖 Edge AI Semantic Mapping</div>
+  <div class="nav-right">
+    <a href="#pipeline" class="nav-link">Pipeline</a>
+    <a href="#results" class="nav-link">Results</a>
+    <a href="#team" class="nav-link">Team</a>
+    <a href="https://github.com/rajneeshbabu/Edge-AI-Based-Hailo-Accelerated-Real-Time-2D-Semantic-Mapping-with-RPi5-for-Assistive-Navigation" target="_blank" class="nav-btn">GitHub</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div>
+    <div class="badge">🎓 IISc CP330 · Edge AI Course Project</div>
+    <h1>Real-Time <span class="grad">Edge AI</span><br>Semantic Mapping</h1>
+    <p class="hero-sub">
+      Assistive navigation for the visually impaired — YOLOv8n at <strong style="color:var(--green)">24.7 FPS</strong> on
+      Raspberry Pi 5 + Hailo-8 NPU. 5-stage model compression, IMU sensor fusion, live 2D polar semantic map.
+      Fully offline. No cloud. No GPU.
+    </p>
+    <div class="hero-btns">
+      <a href="https://github.com/rajneeshbabu/Edge-AI-Based-Hailo-Accelerated-Real-Time-2D-Semantic-Mapping-with-RPi5-for-Assistive-Navigation" target="_blank" class="btn btn-primary">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        View on GitHub
+      </a>
+      <a href="https://rajneeshbabu.github.io" class="btn btn-ghost">← Back to Portfolio</a>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<section style="padding:2rem 0 4rem;">
+  <div class="container">
+    <div class="stats-row reveal">
+      <div class="stat"><div class="stat-val">24.7</div><div class="stat-lbl">FPS on RPi5</div></div>
+      <div class="stat"><div class="stat-val">+9.4%</div><div class="stat-lbl">mAP50 Gain</div></div>
+      <div class="stat"><div class="stat-val">4.5 MB</div><div class="stat-lbl">HEF Model Size</div></div>
+      <div class="stat"><div class="stat-val">13 TOPS</div><div class="stat-lbl">Hailo-8 NPU</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- HARDWARE -->
+<section style="background:var(--bg2);padding:4rem 0;">
+  <div class="container">
+    <div class="reveal">
+      <div class="sec-label">Hardware</div>
+      <h2>Edge Hardware Stack</h2>
+      <p class="sec-sub">Four components working together — fully portable on a USB-C power bank.</p>
+    </div>
+    <div class="hw-grid reveal">
+      <div class="hw-card">
+        <div class="hw-icon">🖥️</div>
+        <div class="hw-name">Raspberry Pi 5</div>
+        <div class="hw-desc">8 GB RAM · Pre/post-processing, display, sensor fusion</div>
+      </div>
+      <div class="hw-card">
+        <div class="hw-icon">⚡</div>
+        <div class="hw-name">Hailo-8 AI HAT</div>
+        <div class="hw-desc">13 TOPS · M.2 PCIe · YOLOv8n HEF inference</div>
+      </div>
+      <div class="hw-card">
+        <div class="hw-icon">📡</div>
+        <div class="hw-name">Arduino Nicla Vision</div>
+        <div class="hw-desc">LSM6DSOX IMU · Gyroscope yaw at 50 Hz over USB serial</div>
+      </div>
+      <div class="hw-card">
+        <div class="hw-icon">📷</div>
+        <div class="hw-name">TNBA1392 Camera</div>
+        <div class="hw-desc">CSI ribbon · RGB 640×480 · Direct Pi camera interface</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PIPELINE -->
+<section id="pipeline">
+  <div class="container">
+    <div class="reveal">
+      <div class="sec-label">Optimization Pipeline</div>
+      <h2>5-Stage Model Compression</h2>
+      <p class="sec-sub">From a 6 MB FP32 model to a 4.5 MB Hailo HEF — with accuracy actually improving at the end.</p>
+    </div>
+    <div class="pipeline reveal">
+      <div class="pipe-step">📦 FP32 Baseline<span>YOLOv8n fine-tune</span></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">🔢 PTQ INT8<span>No retraining</span></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">🧪 QAT INT8<span>Simulated quant.</span></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step active">✂️ L1 Pruning<span>20% filters removed</span></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step active">🚀 Hailo HEF<span>4.5 MB · RPi5</span></div>
+    </div>
+
+    <div style="background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.2);
+      border-radius:var(--r);padding:1.2rem 1.5rem;margin:1.5rem 0;" class="reveal">
+      <p style="color:var(--green);font-size:.85rem;font-weight:700;">💡 Why pruning improves accuracy</p>
+      <p style="color:var(--muted);font-size:.83rem;margin-top:.4rem;">
+        Removing the 20% of filters with the lowest L1-norm eliminates the filters that contribute
+        the most quantization noise — giving the INT8 quantizer cleaner weight distributions to round.
+        mAP50 jumped from <strong style="color:var(--text)">0.6093 (PTQ)</strong> to
+        <strong style="color:var(--green)">0.6793 (Pruned)</strong> — an 11.5% improvement without any new training data.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTS TABLE -->
+<section id="results" style="background:var(--bg2);">
+  <div class="container">
+    <div class="reveal">
+      <div class="sec-label">Benchmarks</div>
+      <h2>Optimization Results</h2>
+      <p class="sec-sub">All stages measured on the same 20-class COCO128 validation set.</p>
+    </div>
+    <table class="opt-table reveal">
+      <thead>
+        <tr><th>Stage</th><th>mAP50</th><th>FPS (T4)</th><th>Size</th><th></th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Baseline FP32</td>
+          <td><div class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:63%"></div></div>0.6269</div></td>
+          <td>120.5</td><td>6.23 MB</td><td></td>
+        </tr>
+        <tr>
+          <td>PTQ INT8</td>
+          <td><div class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:61%"></div></div>0.6093</div></td>
+          <td>214.4</td><td>5.57 MB</td><td></td>
+        </tr>
+        <tr>
+          <td>QAT INT8</td>
+          <td><div class="bar-wrap"><div class="bar"><div class="bar-fill" style="width:59%"></div></div>0.5944</div></td>
+          <td>186.6</td><td>5.65 MB</td><td></td>
+        </tr>
+        <tr class="winner">
+          <td><strong>L1 Pruned INT8</strong></td>
+          <td><div class="bar-wrap"><div class="bar"><div class="bar-fill g" style="width:68%"></div></div><strong style="color:var(--green)">0.6793</strong></div></td>
+          <td><strong style="color:var(--green)">218.3</strong></td>
+          <td>5.65 MB</td>
+          <td><span class="winner-badge">✓ Deployed</span></td>
+        </tr>
+        <tr class="winner">
+          <td><strong>Hailo HEF on RPi5</strong></td>
+          <td>—</td>
+          <td><strong style="color:var(--green)">24.7</strong></td>
+          <td><strong style="color:var(--green)">4.50 MB</strong></td>
+          <td><span class="winner-badge">✓ Edge</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="grid-2 reveal" style="margin-top:2rem;">
+      <div class="card">
+        <h4>System Architecture</h4>
+        <div class="row"><span class="rk">Backbone</span><span class="rv">YOLOv8n CSPDarknet</span></div>
+        <div class="row"><span class="rk">Classes</span><span class="rv">20 indoor-relevant COCO</span></div>
+        <div class="row"><span class="rk">Inference</span><span class="rv">Hailo HEF → 6 raw tensors</span></div>
+        <div class="row"><span class="rk">DFL decode</span><span class="rv">RPi5 CPU (post-process)</span></div>
+        <div class="row"><span class="rk">NMS</span><span class="rv">conf > 0.40, IoU < 0.45</span></div>
+        <div class="row"><span class="rk">Clusters</span><span class="rv g">8/8 Hailo clusters used</span></div>
+      </div>
+      <div class="card">
+        <h4>2D Semantic Map</h4>
+        <div class="row"><span class="rk">IMU update rate</span><span class="rv c">50 Hz gyroscope</span></div>
+        <div class="row"><span class="rk">Heading formula</span><span class="rv">IMU yaw + camera FOV offset</span></div>
+        <div class="row"><span class="rk">Distance estimate</span><span class="rv">Reference height heuristic</span></div>
+        <div class="row"><span class="rk">Smoothing</span><span class="rv">EMA λ = 0.7</span></div>
+        <div class="row"><span class="rk">Object memory</span><span class="rv">10 second persistence</span></div>
+        <div class="row"><span class="rk">Map size</span><span class="rv">520×520 px OpenCV canvas</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section>
+  <div class="container">
+    <div class="reveal">
+      <div class="sec-label">Runtime</div>
+      <h2>How It Works on Device</h2>
+      <p class="sec-sub">Six steps from camera frame to live polar map — all running on the Raspberry Pi 5.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card reveal d1">
+        <div class="step-num">01</div>
+        <div class="step-title">Camera Capture</div>
+        <div class="step-desc">Picamera2 grabs 640×480 RGB frame from TNBA1392 via CSI ribbon at every cycle.</div>
+      </div>
+      <div class="step-card reveal d2">
+        <div class="step-num">02</div>
+        <div class="step-title">Hailo Inference</div>
+        <div class="step-desc">HEF runs on Hailo-8 NPU via M.2 PCIe. Returns 6 raw tensors (3 box + 3 class) for DFL decode.</div>
+      </div>
+      <div class="step-card reveal d3">
+        <div class="step-num">03</div>
+        <div class="step-title">DFL Decode + NMS</div>
+        <div class="step-desc">RPi5 CPU decodes Distribution Focal Loss outputs across 3 strides. Class-wise NMS filters duplicates.</div>
+      </div>
+      <div class="step-card reveal d4">
+        <div class="step-num">04</div>
+        <div class="step-title">IMU Yaw Stream</div>
+        <div class="step-desc">Nicla Vision streams calibrated gyro yaw at 50 Hz over USB serial. Background thread reads continuously.</div>
+      </div>
+      <div class="step-card reveal d5">
+        <div class="step-num">05</div>
+        <div class="step-title">Sensor Fusion</div>
+        <div class="step-desc">Each detection gets: heading = IMU yaw + camera FOV offset. Distance from bounding-box height heuristic. EMA-smoothed.</div>
+      </div>
+      <div class="step-card reveal d6">
+        <div class="step-num">06</div>
+        <div class="step-title">Dual Display</div>
+        <div class="step-desc">Window 1: detection feed with labeled boxes + FPS. Window 2: top-down 2D polar map with 1 m range rings.</div>
+      </div>
+    </div>
+    <div class="tags reveal" style="margin-top:2rem;">
+      <span class="tag">YOLOv8</span><span class="tag">PyTorch</span><span class="tag">Hailo DFC</span>
+      <span class="tag">HailoRT</span><span class="tag g">Picamera2</span><span class="tag g">OpenCV</span>
+      <span class="tag o">MicroPython</span><span class="tag o">pyserial</span>
+      <span class="tag">NumPy</span><span class="tag">pyttsx3</span>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section id="team" style="background:var(--bg2);">
+  <div class="container">
+    <div class="reveal">
+      <div class="sec-label">Team</div>
+      <h2>CP330 Project Team</h2>
+      <p class="sec-sub">IISc Bengaluru · Department of Computational and Data Sciences<br>Instructor: Dr. Pandarasamy Arjunan</p>
+    </div>
+    <div class="team-grid reveal">
+      <div class="team-card">
+        <div class="team-name">Karney Jayanath</div>
+        <div class="team-role">SR No. 26831</div>
+        <div class="team-desc">Model training & optimization — YOLOv8n fine-tuning, PTQ, QAT, L1 pruning, KD ablation, Colab pipeline, benchmarking</div>
+      </div>
+      <div class="team-card">
+        <div class="team-name">Shreevathsa K S</div>
+        <div class="team-role">SR No. 25905</div>
+        <div class="team-desc">RPi5 inference pipeline — Hailo HEF deployment, HailoRT integration, DFL decoder, NMS, Picamera2 capture, bounding-box rendering</div>
+      </div>
+      <div class="team-card me">
+        <div class="team-name">Rajneesh Babu ✦</div>
+        <div class="team-role">SR No. 26058</div>
+        <div class="team-desc">2D semantic mapping — Nicla Vision IMU firmware (MicroPython), gyro calibration, yaw streaming, polar map, EMA smoothing, distance estimation</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="container">
+    <div class="cta-card reveal">
+      <h3>Full Code, Report & Models</h3>
+      <p>Training notebook, HEF model, RPi5 inference script, Nicla Vision firmware, and IEEE-format report — all in the repo.</p>
+      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+        <a href="https://github.com/rajneeshbabu/Edge-AI-Based-Hailo-Accelerated-Real-Time-2D-Semantic-Mapping-with-RPi5-for-Assistive-Navigation" target="_blank" class="btn btn-primary">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          View on GitHub
+        </a>
+        <a href="https://rajneeshbabu.github.io" class="btn btn-ghost">← Back to Portfolio</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    Built by <a href="https://rajneeshbabu.github.io">Rajneesh Babu</a> · IISc Bengaluru · CP330 Edge AI ·
+    <a href="https://github.com/rajneeshbabu/Edge-AI-Based-Hailo-Accelerated-Real-Time-2D-Semantic-Mapping-with-RPi5-for-Assistive-Navigation">GitHub</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const io = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); }});
+  },{threshold:.1});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+})();
+window.addEventListener('scroll',()=>{
+  document.querySelector('nav').style.background =
+    scrollY > 40 ? 'rgba(5,8,16,0.97)' : 'rgba(5,8,16,0.85)';
+});
+</script>
+</body>
+</html>
