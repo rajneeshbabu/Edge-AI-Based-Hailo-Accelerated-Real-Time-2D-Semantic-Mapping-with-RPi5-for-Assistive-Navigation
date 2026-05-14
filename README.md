@@ -1,9 +1,17 @@
-#  Edge AI Based Hailo-Accelerated Real-Time 2D Semantic Mapping with RPi5 for Assistive Navigation
+# 🤖 Edge AI — Real-Time 2D Semantic Mapping (IISc CP330)
+
+[![Python](https://img.shields.io/badge/Python-3.10-blue)](https://python.org)
+[![YOLOv8](https://img.shields.io/badge/YOLOv8-Ultralytics-orange)](https://ultralytics.com)
+[![Hailo](https://img.shields.io/badge/Hailo--8-13%20TOPS-purple)](https://hailo.ai)
+[![License](https://img.shields.io/badge/License-MIT-brightgreen)](LICENSE)
+[![Project Page](https://img.shields.io/badge/Project%20Page-GitHub%20Pages-222?logo=github)](https://rajneeshbabu.github.io/Edge-AI-Based-Hailo-Accelerated-Real-Time-2D-Semantic-Mapping-with-RPi5-for-Assistive-Navigation/)
 
 **Course:** CP330 — Edge AI, Department of Computational and Data Sciences, IISc Bengaluru  
 **Instructor:** Dr. Pandarasamy Arjunan
 
-This project implements a **real-time, on-device semantic navigation aid** for the visually impaired using a **Raspberry Pi 5 + Hailo-8 AI HAT** (13 TOPS NPU). A pruned, INT8-quantized YOLOv8n model detects up to 20 indoor-relevant object classes at **24.7 FPS** and fuses the detections with gyroscope yaw from an Arduino Nicla Vision to build a live **2D polar semantic map** — all without any cloud dependency.
+🌐 **[View Project Page →](https://rajneeshbabu.github.io/Edge-AI-Based-Hailo-Accelerated-Real-Time-2D-Semantic-Mapping-with-RPi5-for-Assistive-Navigation/)**
+
+A real-time, on-device semantic navigation aid for the visually impaired using **Raspberry Pi 5 + Hailo-8 AI HAT** (13 TOPS NPU). A pruned, INT8-quantized YOLOv8n model detects 20 indoor-relevant object classes at **24.7 FPS** and fuses detections with gyroscope yaw from an Arduino Nicla Vision to build a live **2D polar semantic map** — fully offline, no cloud, no GPU required.
 
 ---
 
