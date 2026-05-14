@@ -1,0 +1,44 @@
+# ── Hailo artifacts ─────────────────────────────────────────────────
+# NOTE: *.hef and *.har ARE committed — included in Colab Development flow/models/
+# *.whl is NOT committed (488 MB DFC wheel — too large)
+*.whl
+
+# ── Model weights and ONNX exports ──────────────────────────────────
+# NOTE: *.onnx and *.pt ARE committed — included in Colab Development flow/models/
+*.engine
+
+# ── Ultralytics training outputs ────────────────────────────────────
+runs/
+
+# ── Calibration images ──────────────────────────────────────────────
+coco128_calib/
+coco128/
+datasets/
+
+# ── Python virtual environment ──────────────────────────────────────
+venv_edge_nav/
+venv/
+env/
+.venv/
+
+# ── Python cache ────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# ── Jupyter checkpoints ─────────────────────────────────────────────
+.ipynb_checkpoints/
+
+# ── Logs ────────────────────────────────────────────────────────────
+logs/
+*.log
+
+# ── OS files ────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Editor ──────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
